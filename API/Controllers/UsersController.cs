@@ -1,5 +1,6 @@
 ﻿using API.Data;
 using API.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,9 +10,8 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UsersController : ControllerBase
+    
+    public class UsersController : BaseApiController//here we will access properties from baseapicontroller
     {
         public DataContext _context { get; }
         public UsersController(DataContext context)
@@ -26,6 +26,7 @@ namespace API.Controllers
         }*/
         //make it asynchronous so that, when next request comes it should not for it
         [HttpGet]
+        [AllowAnonymous] //allow any call
         public async Task<IEnumerable<AppUser>> GetUsers()
         {
             return await _context.Users.ToListAsync();
@@ -37,6 +38,7 @@ namespace API.Controllers
             return user;
         }*/
         [HttpGet("{id}")]
+        [Authorize]//need authorization,for that Microsoft.AspNetCore.Authentication.jwtbearer
         public async Task<ActionResult<AppUser>> Getuser(int id)
         {
             return await _context.Users.FindAsync(id);
