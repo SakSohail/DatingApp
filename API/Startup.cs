@@ -1,6 +1,7 @@
 using API.Data;
 using API.Extensions;
 using API.Interfaces;
+using API.Middleware;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -70,12 +71,14 @@ namespace API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
-            }
+            /* if (env.IsDevelopment())
+             {
+                 app.UseDeveloperExceptionPage(); //if we wont use exception, then we wont get exact errror occured in response, but in terminal will get some error , but servor wont crashes, and continue to send responses,to handle we have to use try-catch in controller
+                 //app.UseSwagger();
+                 //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
+             }*/
+
+            app.UseMiddleware<ExceptionMiddleware>();//use custom middleware
 
             app.UseHttpsRedirection();
 

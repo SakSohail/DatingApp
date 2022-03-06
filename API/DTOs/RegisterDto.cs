@@ -9,6 +9,7 @@ namespace API.DTOs
                     //Required means username and pass should be or it will throw 400 error
         public string Username { get; set; }
         [Required]
+        [StringLength(8, MinimumLength = 4)] //added new validation , it will throw validation errors if not providede
         public string  Password { get; set; }
     }
 }
