@@ -1,5 +1,8 @@
 ﻿using API.Data;
+using API.DTOs;
 using API.Entities;
+using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,13 +13,16 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
-    
+    [Authorize]// authorize any call which calls any method of this controller
     public class UsersController : BaseApiController//here we will access properties from baseapicontroller
     {
-        public DataContext _context { get; }
-        public UsersController(DataContext context)
+        private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
+
+        public UsersController(IUserRepository userRepository,IMapper mapper) // injecting repository,instead od DbConetxt
         {
-            _context = context;
+            _userRepository = userRepository;
+            _mapper = mapper;
         }
         /*[HttpGet]
         public ActionResult<IEnumerable<AppUser>> GetUsers()
@@ -26,10 +32,18 @@ namespace API.Controllers
         }*/
         //make it asynchronous so that, when next request comes it should not for it
         [HttpGet]
-        [AllowAnonymous] //allow any call
-        public async Task<IEnumerable<AppUser>> GetUsers()
+        //[AllowAnonymous] //allow any call
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers() //replace Appuser with MemberDto
         {
-            return await _context.Users.ToListAsync();
+            //  var users = await _userRepository.GetUsersAsync();
+            //var usersToReturn = _mapper.Map<IEnumerable<MemberDto>>(users);//maps the users to IEnumerable<MemberDto>
+            // return Ok(await _userRepository.GetUsersAsync()); //calling repo methods
+
+            //  return Ok(usersToReturn);
+
+            var users = await _userRepository.GetMembersAsync();
+
+            return Ok(users);
         }
         /*[HttpGet("{id}")]
         public ActionResult<AppUser> Getuser(int id)
@@ -37,11 +51,16 @@ namespace API.Controllers
             var user = _context.Users.Find(id);
             return user;
         }*/
-        [HttpGet("{id}")]
-        [Authorize]//need authorization,for that Microsoft.AspNetCore.Authentication.jwtbearer
-        public async Task<ActionResult<AppUser>> Getuser(int id)
+        [HttpGet("{username}")]
+        //[Authorize]//need authorization,for that Microsoft.AspNetCore.Authentication.jwtbearer
+        public async Task<ActionResult<MemberDto>> Getuser(string username)
         {
-            return await _context.Users.FindAsync(id);
+            //var user =  await _userRepository.GetUserByUsernameAsync(username);
+
+            //return _mapper.Map<MemberDto>(user);
+
+            //we are using project in repository , so we no need to convert to mapping we can use directly memberdto
+            return await _userRepository.GetMemberAsync(username);
         }
     }
 }
