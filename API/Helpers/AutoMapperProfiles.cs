@@ -22,7 +22,9 @@ namespace API.Helpers
                 
 
             CreateMap<Photo, PhotoDto>();//map from photo entity to photoDto
-            //after this inject into services 
+                                         //after this inject into services 
+
+            CreateMap<MemberUpdateDto, AppUser>();
         }
     }
 }
