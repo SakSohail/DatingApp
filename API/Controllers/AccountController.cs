@@ -9,20 +9,22 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-
+using AutoMapper;
 namespace API.Controllers
 {
   
     public class AccountController : BaseApiController
     {
-        public AccountController(DataContext context, ITokenService tokenService)
+        public AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
         {
+            _mapper = mapper;
             Context = context;
             _tokenService = tokenService;
         }
 
         public DataContext Context { get; }
         private readonly ITokenService _tokenService;
+        private readonly IMapper _mapper;
 
         [HttpPost("register")]
         //public async Task<ActionResult<AppUser>> Register(string username, string password)//if [ApiController] is ther then no need of  [FromQuery],it will map automatically with property name given
@@ -33,20 +35,21 @@ namespace API.Controllers
             {
                 return BadRequest("Username is used");
             }
+            var user = _mapper.Map<AppUser>(registerDto);
             using var hmac = new HMACSHA512();
 
-            var user = new AppUser()
-            {
-                UserName = registerDto.Username.ToLower(),
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),//convert string to bytes
-                PasswordSalt = hmac.Key
-            };
+            user.UserName = registerDto.Username.ToLower();
+            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
+            user.PasswordSalt = hmac.Key;
+
+
             Context.Users.Add(user);
             await Context.SaveChangesAsync();
             return new UserDto()
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
+                KnownAs = user.KnownAs
             };
 
         }
@@ -70,7 +73,8 @@ namespace API.Controllers
             {
                 Username = user.UserName,
                 Token = _tokenService.CreateToken(user),
-                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
+                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
+                KnownAs = user.KnownAs
             };
         }
         
