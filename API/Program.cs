@@ -27,6 +27,19 @@ using System.Threading.Tasks;
 //abstraction of abstraction - DBContext is already making abstraction
 //each entity has its own repository, so more code 
 //need to implement Unit of Work Pattern to control transaction
+
+//image can be uploadde into DB as blob,into server as filesystem,and cloud
+//best will be cloud no disk space problem but it will cost
+//Cloudinary -- cloud platform
+
+/* flow 
+ 1) client upload image with JWT to server
+2) server uploads the photo to CLoudinary with key given by cloudinary for authentication
+3)cloudinary stores photo and send response
+4)api stores photo url and public id to DB
+5)saved in DB and given auto generated id
+6)201 created response sent to client with location header
+ */
 namespace API
 {
     public class Program
