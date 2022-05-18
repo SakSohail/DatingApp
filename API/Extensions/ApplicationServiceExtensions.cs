@@ -20,7 +20,7 @@ namespace API.Extensions
             services.AddDbContext<DataContext>(options => options.UseSqlServer(
                 config.GetConnectionString("DefaultConnection")
                 ));
-
+            services.AddScoped<LogUserActivity>();
             return services;
         }
     }
