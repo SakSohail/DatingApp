@@ -21,6 +21,7 @@ namespace API.Extensions
                 config.GetConnectionString("DefaultConnection")
                 ));
             services.AddScoped<LogUserActivity>();
+            services.AddScoped<ILikesRepository, LikesRepository>();
             return services;
         }
     }

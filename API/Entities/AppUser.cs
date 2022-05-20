@@ -24,6 +24,10 @@ namespace API.Entities
         public string Country { get; set; }
         public ICollection<Photo> Photos { get; set; } //1 to many - 1 user and many photos
 
+        //many-to-many relationships
+        public ICollection<UserLike> LikedByUsers { get; set; }//liked by users
+        public ICollection<UserLike> LikedUsers { get; set; }//others liked this users
+
         //add-migration AddExtendedUsrEntity
         //update-database
 
