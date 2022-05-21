@@ -36,5 +36,8 @@ namespace API.Entities
          {
              return DateOfBirth.CalculateAge();//calling extension method
          }*/
+
+        public ICollection<Message> MessagesSent { get; set; }
+        public ICollection<Message> MessagesReceived { get; set; }
     }
 }
